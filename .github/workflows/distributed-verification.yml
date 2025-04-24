@@ -39,7 +39,7 @@ jobs:
 
       - name: analyze libcore
         run: |
-          export LD_LIBRARY_PATH=$(rustc --print sysroot)/lib
           kani list -Zlist ${{ env.UNSTABLE_ARGS }} --std ./library
+          # export LD_LIBRARY_PATH=$(rustc --print sysroot)/lib
           # cd library/core
           # distributed-verification -- --edition 2024 src/lib.rs
