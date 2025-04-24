@@ -32,13 +32,13 @@ jobs:
         run: |
           kani --version
           cd ~/distributed-verification
-          cargo install --path .
+          # cargo install --path .
           # override toolchain in verify-rust-std
           cp rust-toolchain.toml ${{ github.workspace }}/rust-toolchain.toml
 
       - name: analyze libcore
         run: |
           export LD_LIBRARY_PATH=$(rustc --print sysroot)/lib
-          cd library/core
           kani list -Zlist --std ./library
+          # cd library/core
           # distributed-verification -- --edition 2024 src/lib.rs
