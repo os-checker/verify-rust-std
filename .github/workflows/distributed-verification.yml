@@ -1,0 +1,32 @@
+name: Distributed Verification
+
+on:
+  push:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: 'recursive'
+
+      - name: git clone os-checker/distributed-verification
+        run: |
+          cd && git clone --recursive https://github.com/os-checker/distributed-verification.git
+          cd distributed-verification/kani
+
+      - name: install kani
+        run: |
+          cd ~/distributed-verification/kani
+          ./scripts/setup/ubuntu/install_deps.sh
+          cargo build-dev -- --release
+          echo PATH=$(pwd)/scripts:$PATH >> $GITHUB_ENV
+
+      - name: install distributed-verification
+        run: |
+          cd ~/distributed-verification
+          cargo install --path .
+          # override toolchain in verify-rust-std
+          cp rust-toolchain.toml ${{ github.workspace }}/rust-toolchain.toml
+
