@@ -3,6 +3,9 @@ name: Distributed Verification
 on:
   push:
 
+env:
+  CARGO_TERM_COLOR: always
+
 jobs:
   check:
     runs-on: ubuntu-latest
@@ -22,6 +25,7 @@ jobs:
           ./scripts/setup/ubuntu/install_deps.sh
           cargo build-dev -- --release
           echo PATH=$(pwd)/scripts:$PATH >> $GITHUB_ENV
+          kani --version
 
       - name: install distributed-verification
         run: |
