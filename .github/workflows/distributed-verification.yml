@@ -48,6 +48,7 @@ jobs:
         run: |
           cd && git clone --recursive https://github.com/model-checking/kani.git
           cd kani
+          git checkout 2879207097a875f22768aec1e972c9b87b01b1b6
           ./scripts/setup/ubuntu/install_deps.sh
           cargo build-dev -- --release
           echo PATH=$(pwd)/scripts:$PATH >> $GITHUB_ENV
