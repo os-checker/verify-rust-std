@@ -25,10 +25,10 @@ jobs:
           ./scripts/setup/ubuntu/install_deps.sh
           cargo build-dev -- --release
           echo PATH=$(pwd)/scripts:$PATH >> $GITHUB_ENV
-          kani --version
 
       - name: install distributed-verification
         run: |
+          kani --version
           cd ~/distributed-verification
           cargo install --path .
           # override toolchain in verify-rust-std
