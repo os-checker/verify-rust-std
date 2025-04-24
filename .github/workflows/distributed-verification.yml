@@ -5,6 +5,7 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
+  RUST_LOG: info
 
 jobs:
   check:
@@ -25,6 +26,7 @@ jobs:
           ./scripts/setup/ubuntu/install_deps.sh
           cargo build-dev -- --release
           echo PATH=$(pwd)/scripts:$PATH >> $GITHUB_ENV
+          echo KANI_DIR=$(pwd)/target/kani >> $GITHUB_ENV
 
       - name: install distributed-verification
         run: |
@@ -34,3 +36,8 @@ jobs:
           # override toolchain in verify-rust-std
           cp rust-toolchain.toml ${{ github.workspace }}/rust-toolchain.toml
 
+      - name: analyze libcore
+        run: |
+          export LD_LIBRARY_PATH=$(rustc --print sysroot)/lib
+          ce library/core
+          distributed-verification -- --edition 2024 src/lib.rs
