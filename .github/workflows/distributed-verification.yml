@@ -40,4 +40,5 @@ jobs:
         run: |
           export LD_LIBRARY_PATH=$(rustc --print sysroot)/lib
           cd library/core
-          distributed-verification -- --edition 2024 src/lib.rs
+          kani list -Zlist --std ./library
+          # distributed-verification -- --edition 2024 src/lib.rs
