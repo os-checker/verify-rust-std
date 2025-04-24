@@ -39,5 +39,5 @@ jobs:
       - name: analyze libcore
         run: |
           export LD_LIBRARY_PATH=$(rustc --print sysroot)/lib
-          ce library/core
+          cd library/core
           distributed-verification -- --edition 2024 src/lib.rs
