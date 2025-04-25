@@ -7,6 +7,7 @@ env:
   CARGO_TERM_COLOR: always
   RUST_LOG: info
   UNSTABLE_ARGS: -Z function-contracts -Z mem-predicates -Z float-lib -Z c-ffi -Z loop-contracts
+  KANI_COMMIT: 228c5a5f078ff7b46d67724ed8362865266d709f
 
 jobs:
   check:
@@ -16,46 +17,49 @@ jobs:
         with:
           submodules: 'recursive'
 
-      # - name: git clone os-checker/distributed-verification
+      - name: git clone os-checker/distributed-verification
+        run: |
+          cd && git clone --recursive https://github.com/os-checker/distributed-verification.git
+          cd distributed-verification/kani
+
+      - name: install kani
+        run: |
+          cd ~/distributed-verification/kani
+          git checkout ${{ env.KANI_COMMIT }}
+          ./scripts/setup/ubuntu/install_deps.sh
+          cargo build-dev -- --release
+          # add kani to PATH
+          echo PATH=$(pwd)/scripts:$PATH >> $GITHUB_ENV
+          # distributed-verification needs to know kani dir
+          echo KANI_DIR=$(pwd)/target/kani >> $GITHUB_ENV
+
+      - name: install distributed-verification
+        run: |
+          kani --version
+          cd ~/distributed-verification
+          cp kani/rust-toolchain.toml rust-toolchain.toml
+          cargo install --path .
+          # override toolchain in verify-rust-std
+          cp rust-toolchain.toml ${{ github.workspace }}/rust-toolchain.toml
+
+      - name: analyze libcore
+        run: |
+          # export LD_LIBRARY_PATH=$(rustc --print sysroot)/lib
+          cd library/core
+          distributed-verification -- --edition 2024 src/lib.rs
+
+      # - name: Install kani
       #   run: |
-      #     cd && git clone --recursive https://github.com/os-checker/distributed-verification.git
-      #     cd distributed-verification/kani
-      #
-      # - name: install kani
-      #   run: |
-      #     cd ~/distributed-verification/kani
+      #     cd && git clone --recursive https://github.com/model-checking/kani.git
+      #     cd kani
+      #     git checkout ${{ env.KANI_COMMIT }}
       #     ./scripts/setup/ubuntu/install_deps.sh
       #     cargo build-dev -- --release
       #     echo PATH=$(pwd)/scripts:$PATH >> $GITHUB_ENV
-      #     echo KANI_DIR=$(pwd)/target/kani >> $GITHUB_ENV
       #
-      # - name: install distributed-verification
-      #   run: |
-      #     kani --version
-      #     cd ~/distributed-verification
-      #     # cargo install --path .
-      #     # override toolchain in verify-rust-std
-      #     cp rust-toolchain.toml ${{ github.workspace }}/rust-toolchain.toml
-      #
-      # - name: analyze libcore
+      # - name: Analyze libcore
       #   run: |
       #     kani list -Zlist ${{ env.UNSTABLE_ARGS }} --std ./library
-      #     # export LD_LIBRARY_PATH=$(rustc --print sysroot)/lib
-      #     # cd library/core
-      #     # distributed-verification -- --edition 2024 src/lib.rs
-
-      - name: Install kani
-        run: |
-          cd && git clone --recursive https://github.com/model-checking/kani.git
-          cd kani
-          git checkout 228c5a5f078ff7b46d67724ed8362865266d709f
-          ./scripts/setup/ubuntu/install_deps.sh
-          cargo build-dev -- --release
-          echo PATH=$(pwd)/scripts:$PATH >> $GITHUB_ENV
-
-      - name: Analyze libcore
-        run: |
-          kani list -Zlist ${{ env.UNSTABLE_ARGS }} --std ./library
 
       # - name: Run kani list
       #   run: bash -x scripts/run-kani.sh --run list
