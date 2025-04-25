@@ -37,7 +37,6 @@ jobs:
         run: |
           kani --version
           cd ~/distributed-verification
-          cp kani/rust-toolchain.toml rust-toolchain.toml
           cargo install --path .
           # override toolchain in verify-rust-std
           cp rust-toolchain.toml ${{ github.workspace }}/rust-toolchain.toml
