@@ -32,6 +32,8 @@ jobs:
           echo PATH=$(pwd)/scripts:$PATH >> $GITHUB_ENV
           # distributed-verification needs to know kani dir
           echo KANI_DIR=$(pwd)/target/kani >> $GITHUB_ENV
+          # no_core lib
+          echo NO_CORE_DIR=$(pwd)/target/kani/no_core/lib/ >> $GITHUB_ENV
 
       - name: install distributed-verification
         run: |
@@ -45,7 +47,7 @@ jobs:
         run: |
           export LD_LIBRARY_PATH=$(rustc --print sysroot)/lib
           cd library/core
-          distributed-verification -- --edition 2024 src/lib.rs
+          distributed-verification -- --edition 2024 src/lib.rs -L ${{ env.NO_CORE_DIR }} --extern kani_core
 
       # - name: Install kani
       #   run: |
