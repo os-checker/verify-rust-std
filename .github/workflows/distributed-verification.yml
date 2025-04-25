@@ -57,4 +57,4 @@ jobs:
       #   run: |
       #     kani list -Zlist ${{ env.UNSTABLE_ARGS }} --std ./library
       - name: Run kani list
-        run: scripts/run-kani.sh --run list
+        run: bash -x scripts/run-kani.sh --run list
