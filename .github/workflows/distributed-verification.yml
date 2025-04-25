@@ -44,17 +44,18 @@ jobs:
       #     # cd library/core
       #     # distributed-verification -- --edition 2024 src/lib.rs
 
-      # - name: Install kani
-      #   run: |
-      #     cd && git clone --recursive https://github.com/model-checking/kani.git
-      #     cd kani
-      #     git checkout 2879207097a875f22768aec1e972c9b87b01b1b6
-      #     ./scripts/setup/ubuntu/install_deps.sh
-      #     cargo build-dev -- --release
-      #     echo PATH=$(pwd)/scripts:$PATH >> $GITHUB_ENV
-      #
-      # - name: Analyze libcore
-      #   run: |
-      #     kani list -Zlist ${{ env.UNSTABLE_ARGS }} --std ./library
-      - name: Run kani list
-        run: bash -x scripts/run-kani.sh --run list
+      - name: Install kani
+        run: |
+          cd && git clone --recursive https://github.com/model-checking/kani.git
+          cd kani
+          git checkout 228c5a5f078ff7b46d67724ed8362865266d709f
+          ./scripts/setup/ubuntu/install_deps.sh
+          cargo build-dev -- --release
+          echo PATH=$(pwd)/scripts:$PATH >> $GITHUB_ENV
+
+      - name: Analyze libcore
+        run: |
+          kani list -Zlist ${{ env.UNSTABLE_ARGS }} --std ./library
+
+      # - name: Run kani list
+      #   run: bash -x scripts/run-kani.sh --run list
