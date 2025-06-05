@@ -121,6 +121,13 @@ use crate::{array, ptr, ub_checks};
 #[must_use]
 #[rustc_diagnostic_item = "slice_from_raw_parts"]
 #[track_caller]
+#[safety::precond::NonNull(data, T)]
+#[safety::precond::ValidPtr(data, T, len)]
+#[safety::precond::Init(data, T, len)]
+#[safety::precond::Alive(data, a)]
+#[safety::hazard::Alias(data, _)]
+#[safety::precond::Align(data, T)]
+#[safety::precond::ValidNum(size_of(T)*len, <=isize::MAX)]
 pub const unsafe fn from_raw_parts<'a, T>(data: *const T, len: usize) -> &'a [T] {
     // SAFETY: the caller must uphold the safety contract for `from_raw_parts`.
     unsafe {
@@ -176,6 +183,13 @@ pub const unsafe fn from_raw_parts<'a, T>(data: *const T, len: usize) -> &'a [T]
 #[must_use]
 #[rustc_diagnostic_item = "slice_from_raw_parts_mut"]
 #[track_caller]
+#[safety::precond::NonNull(data, T)]
+#[safety::precond::ValidPtr(data, T, len)]
+#[safety::precond::Init(data, T, len)]
+#[safety::precond::Alive(data, a)]
+#[safety::hazard::Alias(data, _)]
+#[safety::precond::Align(data, T)]
+#[safety::precond::ValidNum(size_of(T)*len, <=isize::MAX)]
 pub const unsafe fn from_raw_parts_mut<'a, T>(data: *mut T, len: usize) -> &'a mut [T] {
     // SAFETY: the caller must uphold the safety contract for `from_raw_parts_mut`.
     unsafe {
